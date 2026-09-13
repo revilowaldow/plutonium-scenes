@@ -69,13 +69,13 @@
 		return `${ghMeta._json.name} \u2014 ${ghMeta._json.walls?.length || 0} wall(s) \u2014 ${ghMeta.name}`;
 	};
 
-	const $iptGithubPat = ComponentUiUtil.$getIptStr(comp, "githubPat");
+	const iptGithubPat = ComponentUiUtil.getIptStr(comp, "githubPat");
 	comp._addHookBase("githubPat", () => {
 		// Clear on navigation, as this is sensitive
 		window._SESSION_GITHUB_PAT = comp._state.githubPat;
 	})();
 
-	const {$modalInner, doClose, pGetResolved, doAutoResize} = await UiUtil.pGetShowModal({
+	const {eleModalInner, doClose, pGetResolved, doAutoResize} = await UiUtil.pGetShowModal({
 		isHeaderBorder: true,
 		title: "Convert DDBI Scene Info",
 		isMinHeight0: true,
@@ -83,8 +83,8 @@
 
 	const {
 		setValues: setValuesDdbiDir,
-		$sel: $selDdbiDir,
-	} = ComponentUiUtil.$getSelEnum(
+		sel: selDdbiDir,
+	} = ComponentUiUtil.getSelEnum(
 		comp,
 		"ixDdbiDir",
 		{
@@ -96,16 +96,16 @@
 		},
 	);
 
-	const $btnFetchDirs = $(`<button class="btn btn-xs mr-2">Fetch</button>`)
-		.on("click", async () => {
+	const btnFetchDirs = veT`<button class="ve-btn ve-btn-xs ve-mr-2">Fetch</button>`
+		.vee.onn("click", async () => {
 			comp._state.ddbiDirs = await pFetchGhJson(`https://api.github.com/repos/MrPrimate/ddb-meta-data/contents/content/scene_info?ref=main`);
 		});
 	comp._addHookBase("ddbiDirs", () => setValuesDdbiDir(comp._state.ddbiDirs));
 
 	const {
 		setValues: setValuesDdbiScenes,
-		$sel: $selDdbiScene,
-	} = ComponentUiUtil.$getSelEnum(
+		sel: selDdbiScene,
+	} = ComponentUiUtil.getSelEnum(
 		comp,
 		"ixDdbiScene",
 		{
@@ -117,17 +117,17 @@
 		},
 	);
 
-	const $btnFetchScenes = $(`<button class="btn btn-xs mr-2">Fetch</button>`)
-		.on("click", async () => {
+	const btnFetchScenes = veT`<button class="ve-btn ve-btn-xs ve-mr-2">Fetch</button>`
+		.vee.onn("click", async () => {
 			if (comp._state.ixDdbiDir == null) {
 				ui.notifications.warning(`Please select a dir first!`);
 				return;
 			}
 
 			try {
-				$btnFetchScenes.disable();
-				$selDdbiScene.disable();
-				$btnAutoMatchScene.disable();
+				btnFetchScenes.vee.prop("disabled", true);
+				selDdbiScene.vee.prop("disabled", true);
+				btnAutoMatchScene.vee.prop("disabled", true);
 
 				const ddbiDir = comp._state.ddbiDirs[comp._state.ixDdbiDir];
 				const ddbiScenes = await pFetchGhJson(ddbiDir.url);
@@ -136,9 +136,9 @@
 				});
 				comp._state.ddbiScenes = ddbiScenes;
 			} finally {
-				$btnFetchScenes.attr("disabled", false);
-				$selDdbiScene.attr("disabled", false);
-				$btnAutoMatchScene.attr("disabled", false);
+				btnFetchScenes.vee.prop("disabled", false);
+				selDdbiScene.vee.prop("disabled", false);
+				btnAutoMatchScene.vee.prop("disabled", false);
 			}
 		});
 	comp._addHookBase("ddbiScenes", () => setValuesDdbiScenes(comp._state.ddbiScenes));
@@ -182,8 +182,8 @@
 		return comp._state.ddbiScenes.indexOf(choice);
 	};
 
-	const $btnAutoMatchScene = $(`<button class="btn btn-xs">Auto Match</button>`)
-		.on("click", async () => {
+	const btnAutoMatchScene = veT`<button class="ve-btn ve-btn-xs">Auto Match</button>`
+		.vee.onn("click", async () => {
 			if (!comp._state.ddbiScenes.length) return ui.notifications.warning(`Please fetch some scenes first!`);
 
 			const matched = (await getAutoMatched_originalLink()) ??
@@ -200,7 +200,7 @@
 		"grid": "Grid",
 	};
 
-	const $selScalingMethod = ComponentUiUtil.$getSelEnum(
+	const selScalingMethod = ComponentUiUtil.getSelEnum(
 		comp,
 		"scalingMethod",
 		{
@@ -209,15 +209,17 @@
 		},
 	);
 
-	const $iptScalingManual = ComponentUiUtil.$getIptNumber(comp, "scalingManual", 1, {fallbackOnNaN: 1})
-		.title("Manual Scaling")
-		.addClass("ml-2 w-80p no-shrink");
+	const iptScalingManual = ComponentUiUtil.getIptNumber(comp, "scalingManual", 1, {fallbackOnNaN: 1})
+		.vee.tooltip("Manual Scaling")
+		.vee.addClass("ve-ml-2")
+		.vee.addClass("ve-w-80p")
+		.vee.addClass("ve-no-shrink");
 	comp._addHookBase("scalingMethod", () => {
-		$iptScalingManual.toggleVe(comp._state.scalingMethod === "manual");
+		iptScalingManual.vee.toggle(comp._state.scalingMethod === "manual");
 	})();
 
-	const $btnSubmit = $(`<button class="btn btn-sm btn-primary" title="SHIFT to Submit and Close">Submit</button>`)
-		.on("click", async evt => {
+	const btnSubmit = veT`<button class="ve-btn ve-btn-sm ve-btn-primary" title="SHIFT to Submit and Close">Submit</button>`
+		.vee.onn("click", async evt => {
 			if (comp._state.ixDdbiScene == null) return ui.notifications.warning(`Please select a scene first!`);
 
 			const ddbiScene = comp._state.ddbiScenes[comp._state.ixDdbiScene];
@@ -288,28 +290,28 @@
 			if (evt.shiftKey) doClose().then(null);
 		});
 
-	$$($modalInner)`
-		<label class="mb-2 ve-flex-v-center">
-			<span class="mr-2 no-shrink w-100p text-right ve-muted" title="If you hit the GitHub API rate limit, create a Personal Access Token and enter it here.">Github PAT</span>
-			${$iptGithubPat}
+	veT(eleModalInner)`
+		<label class="ve-mb-2 ve-flex-v-center">
+			<span class="ve-mr-2 ve-no-shrink ve-w-100p ve-text-right ve-muted" title="If you hit the GitHub API rate limit, create a Personal Access Token and enter it here.">Github PAT</span>
+			${iptGithubPat}
 		</label>
-		<div class="mb-2 ve-flex-v-center">
-			<span class="mr-2 no-shrink w-100p text-right">Source Dir</span>
-			${$btnFetchDirs}
-			${$selDdbiDir}
+		<div class="ve-mb-2 ve-flex-v-center">
+			<span class="ve-mr-2 ve-no-shrink ve-w-100p ve-text-right">Source Dir</span>
+			${btnFetchDirs}
+			${selDdbiDir}
 		</div>
-		<div class="mb-2 ve-flex-v-center">
-			<span class="mr-2 no-shrink w-100p text-right">Scene</span>
-			${$btnFetchScenes}
-			${$selDdbiScene.addClass("mr-2")}
-			${$btnAutoMatchScene}
+		<div class="ve-mb-2 ve-flex-v-center">
+			<span class="ve-mr-2 ve-no-shrink ve-w-100p ve-text-right">Scene</span>
+			${btnFetchScenes}
+			${selDdbiScene.vee.addClass("ve-mr-2")}
+			${btnAutoMatchScene}
 		</div>
-			<label class="mb-2 ve-flex-v-center">
-			<span class="mr-2 no-shrink w-100p text-right">Scaling Method</span>
-			${$selScalingMethod}
-			${$iptScalingManual}
+			<label class="ve-mb-2 ve-flex-v-center">
+			<span class="ve-mr-2 ve-no-shrink ve-w-100p ve-text-right">Scaling Method</span>
+			${selScalingMethod}
+			${iptScalingManual}
 		</label>
-		<div class="mb-2 ve-flex-h-right pr-3">${$btnSubmit}</div>
+		<div class="ve-mb-2 ve-flex-h-right ve-pr-3">${btnSubmit}</div>
 	`;
 
 	doAutoResize();

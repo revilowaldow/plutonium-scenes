@@ -37,7 +37,7 @@
 
 		if (scenesNavPlut.length === 1 && scenesNavOther.length === 1) return {sceneSource: scenesNavOther[0], sceneTarget: scenesNavPlut[0]};
 
-		const {$modalInner, doClose, pGetResolved, doAutoResize} = await UiUtil.pGetShowModal({
+		const {eleModalInner, doClose, pGetResolved, doAutoResize} = await UiUtil.pGetShowModal({
 			isHeaderBorder: true,
 			title: "Select Scenes",
 			isMinHeight0: true,
@@ -62,19 +62,19 @@
 			displayNullAs: "Select Scene",
 		};
 
-		const $selSceneSource = ComponentUiUtil.$getSelEnum(comp, "idSceneSource", selOpts);
+		const selSceneSource = ComponentUiUtil.getSelEnum(comp, "idSceneSource", selOpts);
 
-		const $selSceneTarget = ComponentUiUtil.$getSelEnum(comp, "idSceneTarget", selOpts);
+		const selSceneTarget = ComponentUiUtil.getSelEnum(comp, "idSceneTarget", selOpts);
 
-		const $btnSwap = $(`<button class="btn btn-xs" title="Swap"><i class="fa-solid fa-rotate"></i></button>`)
-			.on("click", () => {
+		const btnSwap = veT`<button class="ve-btn ve-btn-xs" title="Swap"><i class="fa-solid fa-rotate"></i></button>`
+			.vee.onn("click", () => {
 				const {idSceneSource, idSceneTarget} = comp._state;
 				comp._state.idSceneSource = idSceneTarget;
 				comp._state.idSceneTarget = idSceneSource;
 			});
 
-		const $btnSubmit = $(`<button class="btn btn-primary btn-sm">Submit</button>`)
-			.on("click", async () => {
+		const btnSubmit = veT`<button class="ve-btn ve-btn-primary ve-btn-sm">Submit</button>`
+			.vee.onn("click", async () => {
 				if (comp._state.idSceneSource == null || comp._state.idSceneTarget == null) {
 					ui.notifications.warning(`Please select two scenes!`);
 					return;
@@ -88,19 +88,19 @@
 				await doClose(true, {sceneSource: game.scenes.get(comp._state.idSceneSource), sceneTarget: game.scenes.get(comp._state.idSceneTarget)});
 			});
 
-		$$($modalInner)`
-		<div class="ve-flex-v-center w-100">
-			<div class="ve-flex-col mr-1 w-100 min-w-0">
-				<label class="ve-flex-v-center mb-2"><span class="mr-2 w-80p text-right bold">Source:</span>${$selSceneSource}</label>
-				<label class="ve-flex-v-center"><span class="mr-2 w-80p text-right bold">Target:</span>${$selSceneTarget}</label>
+		veT(eleModalInner)`
+		<div class="ve-flex-v-center ve-w-100">
+			<div class="ve-flex-col ve-mr-1 ve-w-100 ve-min-w-0">
+				<label class="ve-flex-v-center ve-mb-2"><span class="ve-mr-2 ve-w-80p ve-text-right ve-bold">Source:</span>${selSceneSource}</label>
+				<label class="ve-flex-v-center"><span class="ve-mr-2 ve-w-80p ve-text-right ve-bold">Target:</span>${selSceneTarget}</label>
 			</div>
 			
-			<div class="ve-flex-v-center mr-2">
-				${$btnSwap}
+			<div class="ve-flex-v-center ve-mr-2">
+				${btnSwap}
 			</div>
 			
 			<div>
-				${$btnSubmit}
+				${btnSubmit}
 			</div>
 		</div>`;
 
