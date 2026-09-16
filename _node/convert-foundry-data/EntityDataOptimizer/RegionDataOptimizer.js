@@ -43,8 +43,10 @@ class _RegionBehaviorDataOptimizer extends EntityDataOptimizerSimpleBase {
 		"name": "",
 		"type": null,
 		"system": {
-			"destination": null,
+			// region `CONFIG.RegionBehavior.dataModels.teleportToken.schema.getInitialValue()`
+			"destinations": [],
 			"choice": false,
+			// endregion
 		},
 		"disabled": false,
 		"flags": {},
@@ -60,14 +62,17 @@ class _RegionBehaviorDataOptimizer extends EntityDataOptimizerSimpleBase {
 		const out = super.getOptimizedEntity(entity);
 		if (!out) return out;
 
-		if (out.system?.destination) {
-			const mDestination = /^Scene\.(?<sceneId>[^.]+)\.Region\.(?<regionId>[^.]+)$/i.exec(out.system.destination);
-			if (!mDestination) throw new Error(`Unhandled "destination" format "${out.system.destination}"!`);
-			const {sceneId, regionId} = mDestination.groups;
-			out.system.destination = {
-				foundryIdScene: this._sceneIdMapper.getMappedId({id: sceneId, name: entity._parent._parent.name}),
-				foundryIdRegion: this._regionIdMapper.getMappedId({id: regionId, name: entity._parent.name}),
-			};
+		if (out.system?.destinations?.length) {
+			out.system.destinations = out.system.destinations
+				.map(destination => {
+					const mDestination = /^Scene\.(?<sceneId>[^.]+)\.Region\.(?<regionId>[^.]+)$/i.exec(destination);
+					if (!mDestination) throw new Error(`Unhandled "destination" format "${destination}"!`);
+					const {sceneId, regionId} = mDestination.groups;
+					return {
+						foundryIdScene: this._sceneIdMapper.getMappedId({id: sceneId, name: entity._parent._parent.name}),
+						foundryIdRegion: this._regionIdMapper.getMappedId({id: regionId, name: entity._parent.name}),
+					};
+				});
 		}
 
 		return out;

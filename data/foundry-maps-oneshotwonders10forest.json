@@ -5602,10 +5602,12 @@
 							"name": "Teleport Token",
 							"type": "teleportToken",
 							"system": {
-								"destination": {
-									"foundryIdScene": "welcomeHomemansi",
-									"foundryIdRegion": "basement"
-								}
+								"destinations": [
+									{
+										"foundryIdScene": "welcomeHomemansi",
+										"foundryIdRegion": "basement"
+									}
+								]
 							}
 						}
 					],
@@ -5628,10 +5630,12 @@
 							"name": "Teleport Token",
 							"type": "teleportToken",
 							"system": {
-								"destination": {
-									"foundryIdScene": "welcomeHomemansi",
-									"foundryIdRegion": "mainFloor"
-								}
+								"destinations": [
+									{
+										"foundryIdScene": "welcomeHomemansi",
+										"foundryIdRegion": "mainFloor"
+									}
+								]
 							}
 						}
 					],
